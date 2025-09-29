@@ -28,6 +28,7 @@ This is a full-stack CRUD task manager built with React + TypeScript, Node.js + 
 - JWT authentication for secure access 
 - Schema validation with Zod for safe input
 - Prisma ORM for type-safe database queries and migrations
+- API testing under backend/test/graphql
 
 ## Tech Stack
 
