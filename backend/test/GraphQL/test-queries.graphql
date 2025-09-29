@@ -1,0 +1,222 @@
+
+# WORKING GRAPHQL TEST QUERIES
+
+# 1. USER REGISTRATION & AUTHENTICATION
+
+# Run this FIRST (no headers needed)
+mutation RegisterUser {
+  register(input: {
+    email: "testuser@example.com"
+    password: "Testpass123"
+    name: "Test User"
+  }) {
+    token
+    user {
+      id
+      email
+      name
+    }
+  }
+}
+
+
+mutation LoginUser {
+  login(input: {
+    email: "testuser@example.com"
+    password: "Testpass123"
+  }) {
+    token
+    user {
+      id
+      email
+      name
+    }
+  }
+}
+
+# 2. AUTHENTICATED QUERIES (need headers)
+
+
+# Test authentication works
+query GetCurrentUser {
+  me {
+    id
+    email
+    name
+    createdAt
+  }
+}
+
+# 3. TASK OPERATIONS
+
+
+# Create a single task
+mutation CreateTask {
+  createTask(input: {
+    taskName: "Complete project documentation"
+    description: "Write comprehensive docs for the GraphQL API"
+    status: PENDING
+    dueDate: "2024-12-31T23:59:59Z"
+  }) {
+    id
+    taskName
+    description
+    status
+    dueDate
+    createdAt
+  }
+}
+
+# Create another task
+mutation CreateSecondTask {
+  createTask(input: {
+    taskName: "Code review"
+    description: "Review team pull requests"
+    status: IN_PROGRESS
+  }) {
+    id
+    taskName
+    description
+    status
+    createdAt
+  }
+}
+
+# Get all tasks
+query GetAllTasks {
+  taskByUser {
+    id
+    taskName
+    description
+    status
+    dueDate
+    createdAt
+  }
+}
+
+# Get tasks with filter
+query GetPendingTasks {
+  taskByUser(filters: { status: PENDING }) {
+    id
+    taskName
+    status
+  }
+}
+
+# Get tasks with sorting
+query GetTasksSorted {
+  taskByUser(filters: { sortBy: CREATED_DESC }) {
+    id
+    taskName
+    createdAt
+  }
+}
+
+# Get specific task by ID (replace "1" with actual task ID)
+query GetTaskById {
+  taskById(id: "1") {
+    id
+    taskName
+    description
+    status
+    dueDate
+    user {
+      id
+      name
+      email
+    }
+  }
+}
+
+# 4. TASK UPDATES
+
+
+# Update a task (replace "1" with actual task ID)
+mutation UpdateTask {
+  updateTask(
+    id: "1"
+    input: {
+      status: COMPLETED
+      description: "Updated: Documentation completed successfully"
+    }
+  ) {
+    id
+    taskName
+    description
+    status
+    updatedAt
+  }
+}
+
+# 5. USER OPERATIONS
+
+# Get user by ID (should be same as "me")
+query GetUserById {
+  user(id: "1") {
+    id
+    email
+    name
+    tasks {
+      id
+      taskName
+      status
+    }
+  }
+}
+
+# Update user profile
+mutation UpdateUser {
+  updateUser(
+    id: "1"
+    input: {
+      name: "Updated Test User"
+      email: "updated@example.com"
+    }
+  ) {
+    id
+    name
+    email
+    updatedAt
+  }
+}
+
+
+# 6. VALIDATION ERROR TESTS
+
+
+# Test validation - empty task name
+mutation TestValidationError {
+  createTask(input: {
+    taskName: ""
+    description: "This should fail validation"
+  }) {
+    id
+    taskName
+  }
+}
+
+# Test validation - short password
+mutation TestPasswordValidation {
+  register(input: {
+    email: "test2@example.com"
+    password: "short"
+    name: "Test User"
+  }) {
+    token
+    user { id }
+  }
+}
+
+
+# 7. CLEANUP OPERATIONS
+
+
+# Delete a task (replace "2" with actual task ID)
+mutation DeleteTask {
+  deleteTask(id: "2")
+}
+
+# Delete user account (optional)
+mutation DeleteUser {
+  deleteUser(id: "1")
+}

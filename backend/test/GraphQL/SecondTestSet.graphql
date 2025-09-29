@@ -1,0 +1,233 @@
+
+# Authentication GRAPHQL TEST SUITE
+
+
+# Test 1: User Registration
+mutation RegisterUser {
+  register(input: {
+    email: "testuser@example.com"
+    password: "SecurePassword123"
+    name: "Test User"
+  }) {
+    token
+    user {
+      id
+      email
+      name
+      createdAt
+    }
+  }
+}
+
+# Test 2: User Login
+mutation LoginUser {
+  login(input: {
+    email: "testuser@example.com"
+    password: "SecurePassword123"
+  }) {
+    token
+    user {
+      id
+      email
+      name
+    }
+  }
+}
+
+# Test 3: Get Current User (Authentication Test)
+query GetCurrentUser {
+  me {
+    id
+    email
+    name
+    createdAt
+    tasks {
+      id
+      taskName
+      status
+    }
+  }
+}
+
+# Test 4: Create Multiple Tasks
+mutation CreateTestTasks {
+  task1: createTask(input: {
+    taskName: "Complete GraphQL API"
+    description: "Finish implementing all GraphQL resolvers and mutations"
+    status: IN_PROGRESS
+    dueDate: "2024-12-31T23:59:59Z"
+  }) {
+    id
+    taskName
+    description
+    status
+    dueDate
+    userId
+    createdAt
+  }
+  
+  task2: createTask(input: {
+    taskName: "Write Unit Tests"
+    description: "Create comprehensive test suite for all API endpoints"
+    status: PENDING
+  }) {
+    id
+    taskName
+    description
+    status
+    userId
+  }
+  
+  task3: createTask(input: {
+    taskName: "Deploy to Production"
+    description: "Deploy the completed application to production server"
+    status: PENDING
+    dueDate: "2025-01-15T23:59:59Z"
+  }) {
+    id
+    taskName
+    description
+    status
+    dueDate
+  }
+}
+
+# Test 5: Get User's Tasks (Default Sorting - Newest First)
+query GetUserTasksDefault {
+  taskByUser {
+    id
+    taskName
+    description
+    status
+    dueDate
+    createdAt
+    userId
+  }
+}
+
+# Test 6: Get User's Tasks with Status Filter
+query GetCompletedTasks {
+  taskByUser(filters: { status: COMPLETED }) {
+    id
+    taskName
+    status
+    createdAt
+  }
+}
+
+# Test 7: Get User's Tasks with Different Sorting
+query GetTasksSortedByName {
+  taskByUser(filters: { sortBy: NAME_ASC }) {
+    id
+    taskName
+    status
+    createdAt
+  }
+}
+
+query GetTasksSortedByDueDate {
+  taskByUser(filters: { sortBy: DUE_ASC }) {
+    id
+    taskName
+    status
+    dueDate
+    createdAt
+  }
+}
+
+# Test 8: Get Single Task by ID
+query GetSingleTask {
+  taskById(id: 1) {
+    id
+    taskName
+    description
+    status
+    dueDate
+    userId
+    user {
+      id
+      email
+      name
+    }
+  }
+}
+
+# Test 9: Update a Task
+mutation UpdateTask {
+  updateTask(id: 1, input: {
+    taskName: "Complete GraphQL API - UPDATED"
+    status: COMPLETED
+    description: "All GraphQL endpoints implemented and tested"
+  }) {
+    id
+    taskName
+    description
+    status
+    updatedAt
+  }
+}
+
+# Test 10: Partial Update (Only Status)
+mutation UpdateTaskStatus {
+  updateTask(id: 2, input: {
+    status: IN_PROGRESS
+  }) {
+    id
+    taskName
+    status
+    updatedAt
+  }
+}
+
+# Test 11: Delete a Task
+mutation DeleteTask {
+  deleteTask(id: 3)
+}
+
+# Test 12: Verify Task Deletion
+query VerifyTasksAfterDelete {
+  taskByUser {
+    id
+    taskName
+    status
+  }
+}
+
+# Test 13: Update User Profile
+mutation UpdateUserProfile {
+  updateUser(id: 1, input: {
+    name: "Test User - Updated"
+    email: "updateduser@example.com"
+  }) {
+    id
+    email
+    name
+    updatedAt
+  }
+}
+
+# Test 14: Security Tests (Should Fail)
+
+# Test 14a: Try to access other user's data (Should Fail)
+query TryAccessOtherUserTask {
+  taskById(id: 9999) { # Non-existent or other user's task
+    id
+    taskName
+  }
+}
+
+# Test 14b: Try to update other user's task (Should Fail)
+mutation TryUpdateOtherUserTask {
+  updateTask(id: 9999, input: {
+    taskName: "Hacked Task"
+  }) {
+    id
+    taskName
+  }
+}
+
+# Test 14c: Try to delete other user's task (Should Fail)
+mutation TryDeleteOtherUserTask {
+  deleteTask(id: 9999)
+}
+

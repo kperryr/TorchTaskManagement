@@ -1,0 +1,314 @@
+# COMPLETE GRAPHQL API TEST SUITE
+# Run this entire block in your GraphQL Playground
+
+mutation TestUserOperations {
+  # 1. Create Users
+  createUser1: createUser(input: {
+    email: "test1@example.com"
+    name: "Test User One"
+  }) {
+    id
+    email
+    name
+  }
+  
+  createUser2: createUser(input: {
+    email: "test2@example.com" 
+    name: "Test User Two"
+  }) {
+    id
+    email
+    name
+  }
+  
+  createUser3: createUser(input: {
+    email: "test3@example.com"
+    name: "Test User Three"
+  }) {
+    id
+    email
+    name
+  }
+}
+
+mutation TestTaskOperations {
+  # 2. Create Tasks for the users (use IDs from above)
+  createTask1: createTask(input: {
+    taskName: "Complete Project Documentation"
+    description: "Write comprehensive documentation for the entire project"
+    userId: "1"
+    status: IN_PROGRESS
+  }) {
+    id
+    taskName
+    description
+    status
+    user {
+      id
+      name
+      email
+    }
+  }
+  
+  createTask2: createTask(input: {
+    taskName: "Set Up Testing Environment"
+    description: "Configure Jest and testing utilities"
+    userId: "1"
+    status: PENDING
+  }) {
+    id
+    taskName
+    status
+    user {
+      name
+    }
+  }
+  
+  createTask3: createTask(input: {
+    taskName: "Deploy to Production"
+    description: "Deploy the application to production server"
+    userId: "2"
+    status: COMPLETED
+  }) {
+    id
+    taskName
+    status
+    user {
+      name
+    }
+  }
+  
+  createTask4: createTask(input: {
+    taskName: "Performance Optimization"
+    description: "Optimize database queries and API responses"
+    userId: "2"
+    status: IN_PROGRESS
+  }) {
+    id
+    taskName
+    status
+  }
+  
+  createTask5: createTask(input: {
+    taskName: "User Authentication"
+    description: "Implement JWT authentication system"
+    userId: "3"
+    status: PENDING
+  }) {
+    id
+    taskName
+    status
+  }
+}
+
+query TestAllQueries {
+  # 3. Test User Queries
+  
+  # Get all users with their tasks
+  getAllUsers: users {
+    id
+    email
+    name
+    tasks {
+      id
+      taskName
+      status
+    }
+  }
+  
+  # Get user by ID
+  getUserById: user(id: "1") {
+    id
+    email
+    name
+    tasks {
+      id
+      taskName
+      status
+      description
+    }
+  }
+  
+  # Get user by email
+  getUserByEmail: userByEmail(email: "test2@example.com") {
+    id
+    email
+    name
+    tasks {
+      id
+      taskName
+      status
+    }
+  }
+  
+  # 4. Test Task Queries
+  
+  # Get all tasks with user info
+  getAllTasks: tasks {
+    id
+    taskName
+    description
+    status
+    user {
+      id
+      name
+      email
+    }
+    createdAt
+  }
+  
+  # Get task by ID
+  getTaskById: task(id: "1") {
+    id
+    taskName
+    description
+    status
+    user {
+      name
+      email
+    }
+  }
+  
+  # Get tasks by user ID
+  getTasksByUser1: tasksByUser(userId: "1") {
+    id
+    taskName
+    status
+    description
+  }
+  
+  getTasksByUser2: tasksByUser(userId: "2") {
+    id
+    taskName
+    status
+  }
+  
+  # Get tasks by status
+  pendingTasks: tasksByStatus(status: PENDING) {
+    id
+    taskName
+    status
+    user {
+      name
+    }
+  }
+  
+  inProgressTasks: tasksByStatus(status: IN_PROGRESS) {
+    id
+    taskName
+    status
+    user {
+      name
+    }
+  }
+  
+  completedTasks: tasksByStatus(status: COMPLETED) {
+    id
+    taskName
+    status
+    user {
+      name
+    }
+  }
+}
+
+mutation TestUpdateOperations {
+  # 5. Test Update Operations
+  
+  # Update user
+  updateUser: updateUser(id: "1", input: {
+    name: "Updated User One"
+    email: "updated1@example.com"
+  }) {
+    id
+    email
+    name
+  }
+  
+  # Update task
+  updateTask: updateTask(id: "1", input: {
+    taskName: "Updated Documentation Task"
+    description: "Updated description for documentation"
+    status: COMPLETED
+  }) {
+    id
+    taskName
+    description
+    status
+    updatedAt
+  }
+  
+  # Update another task
+  updateTask2: updateTask(id: "2", input: {
+    status: IN_PROGRESS
+  }) {
+    id
+    taskName
+    status
+  }
+}
+
+query VerifyUpdates {
+  # 6. Verify updates worked
+  updatedUser: user(id: "1") {
+    id
+    email
+    name
+  }
+  
+  updatedTask: task(id: "1") {
+    id
+    taskName
+    description
+    status
+  }
+}
+
+mutation TestErrorCases {
+  # 7. Test error cases
+  
+  # Try to create user with duplicate email (should fail)
+  duplicateUser: createUser(input: {
+    email: "test1@example.com"  # Already exists
+    name: "Duplicate User"
+  }) {
+    id
+    email
+  }
+  
+  # Try to create task with invalid user ID (should fail)
+  invalidUserTask: createTask(input: {
+    taskName: "Invalid User Task"
+    userId: "999"  # Non-existent user
+    status: PENDING
+  }) {
+    id
+    taskName
+  }
+}
+
+mutation TestDeleteOperations {
+  # 8. Test delete operations (cleanup)
+  deleteTask5: deleteTask(id: "5")
+  deleteTask4: deleteTask(id: "4")
+  deleteTask3: deleteTask(id: "3")
+  deleteTask2: deleteTask(id: "2")
+  deleteTask1: deleteTask(id: "1")
+  
+  deleteUser3: deleteUser(id: "3")
+  deleteUser2: deleteUser(id: "2")
+  deleteUser1: deleteUser(id: "1")
+}
+
+query FinalVerification {
+  # 9. Final verification - should be empty
+  finalUsers: users {
+    id
+    email
+  }
+  
+  finalTasks: tasks {
+    id
+    taskName
+  }
+}
