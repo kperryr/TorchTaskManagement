@@ -5,21 +5,20 @@ import cors from 'cors';
 import { schema } from './graphql/index';
 import { createGraphQLContext } from './middleware/auth';
 
-const app = express();
-
-app.use(cors());
-app.use(express.json());
-
-
-const server = new ApolloServer({
-  schema,
-});
-
-export default app;
-
+//refactored with true factory pattern 
 export const startServer = async () => {
+
+  const app = express();
+
+  app.use(cors());
+  app.use(express.json());
+
+  const server = new ApolloServer({
+    schema,
+  });
+
   await server.start();
-  
+
   app.use(
     '/graphql',
     expressMiddleware(server, {
@@ -28,6 +27,6 @@ export const startServer = async () => {
       },
     })
   );
-  
+
   return app;
 };

@@ -1,11 +1,11 @@
-import app, { startServer } from './app';
+import { startServer } from './app';
 import { env } from './config/env';
 
 const PORT = env.port;
 
 const start = async () => {
   try {
-    await startServer(); 
+    const app = await startServer(); 
     app.listen(PORT, () => {
       console.log(`Server running at http://localhost:${PORT}/graphql`);
     });
