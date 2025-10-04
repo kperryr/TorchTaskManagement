@@ -2,7 +2,7 @@ import { UserService } from './user.service';
 import { CreateUserSchema, UpdateUserInputSchema, LoginSchema, CreateUserInput, UpdateUserInput, LoginInput, } from './user.schema';
 import { UserWithTasks } from '../../types';
 import { validation } from '../../lib/validation';
-import { GraphQLContext } from '../../middleware/auth';
+import { GraphQLContext } from '../../types';
 
 const userService = new UserService();
 
@@ -35,7 +35,7 @@ export const userResolvers = {
         throw new Error('You can only view your own profile.');
       }
       
-      return userService.getUserById(userId);
+      return userService.getUserById(userId, context.prisma);
     },
 
     userByEmail: async (_: unknown, { email }: { email: string }, context: GraphQLContext) => {
@@ -50,19 +50,19 @@ export const userResolvers = {
         throw new Error('You can only view your own profile.');
       }
       
-      return userService.getUserByEmail(userEmail);
+      return userService.getUserByEmail(userEmail,context.prisma);
     },
   },
 
    Mutation: {
-    register: async (_: unknown, { input }: { input: CreateUserInput }) => {
+    register: async (_: unknown, { input }: { input: CreateUserInput }, context: GraphQLContext) => {
       const validatedData = CreateUserSchema.parse(input);
-      return userService.createUser(validatedData);
+      return userService.createUser(validatedData, context.prisma);
     },
 
-    login: async (_: unknown, { input }: { input: LoginInput }) => {
+    login: async (_: unknown, { input }: { input: LoginInput }, context: GraphQLContext) => {
       const validatedData = LoginSchema.parse(input);
-      return userService.login(validatedData);
+      return userService.login(validatedData, context.prisma);
     },
 
     updateUser: async (_: unknown, { id, input }: { id: string; input: UpdateUserInput }, context: GraphQLContext) => {
@@ -78,7 +78,7 @@ export const userResolvers = {
         throw new Error('You can only update your own account.');
       }
       
-      return userService.updateUser(userId, validatedData);
+      return userService.updateUser(userId, validatedData, context.prisma);
     },
 
     deleteUser: async (_: unknown, { id }: { id: string }, context: GraphQLContext) => {
@@ -92,7 +92,7 @@ export const userResolvers = {
       if (context.user.id !== userId) {
         throw new Error('You can only delete your own account.');
       }
-      return userService.deleteUser(userId);
+      return userService.deleteUser(userId,  context.prisma);
     },
   },
 
@@ -103,7 +103,7 @@ export const userResolvers = {
       if (user.tasks) return user.tasks;
       
       // Otherwise fetch them
-      return userService.getUserTasks(user.id);
+      return userService.getUserTasks(user.id, context.prisma);
     },
   },
 };
