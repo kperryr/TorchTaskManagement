@@ -1,11 +1,10 @@
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import { env } from '../config/env';
+import { JWTPayload } from '../types';
 
 const JWT_EXPIRES_IN = '7d';
-export interface JWTPayload {
-  userId: number;
-}
+
 
 export const generateToken = (userId: number): string => {
     if (!env.jwtSecret) {

@@ -47,17 +47,6 @@ export const LoginSchema = z.object({
   password: PasswordSchema
 });
 
-// Auth Payload Schema (for login/register responses)
-export const AuthPayloadSchema = z.object({
-  token: z.string(),
-  user: z.object({
-    id: z.number(),
-    email: z.string(),
-    name: z.string().nullable(),
-    createdAt: z.date(),
-    updatedAt: z.date()
-  })
-});
 
 // Validation for user ID
 export const UserIdSchema = z.object({
@@ -72,16 +61,5 @@ export const UserIdSchema = z.object({
 export type CreateUserInput = z.infer<typeof CreateUserSchema>;
 export type UpdateUserInput = z.infer<typeof UpdateUserInputSchema>;
 export type LoginInput = z.infer<typeof LoginSchema>;
-export type AuthPayload = z.infer<typeof AuthPayloadSchema>;
 export type UserIdInput = z.infer<typeof UserIdSchema>;
 
-
-export const UserWithoutPasswordSchema = z.object({
-  id: z.number(),
-  email: z.string(),
-  name: z.string().nullable(),
-  createdAt: z.date(),
-  updatedAt: z.date()
-});
-
-export type UserWithoutPassword = z.infer<typeof UserWithoutPasswordSchema>;

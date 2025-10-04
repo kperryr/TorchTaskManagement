@@ -1,14 +1,16 @@
-import { UpdateUserInputSchema, CreateUserInput, UpdateUserInput, LoginInput, AuthPayload } from './user.schema';
+import { UpdateUserInputSchema, CreateUserInput, UpdateUserInput, LoginInput} from './user.schema';
 import { AppError } from '../../lib/AppErrors';
 import { handlePrismaError } from '../../lib/PrismaErrorHelper';
 import { generateToken, hashPassword, comparePassword } from '../../utils/auth';
-import { prisma } from '../../lib/prisma';
+import {PrismaClientType } from '../../lib/prisma';
+import { AuthPayload } from '../../types';
+
 
 
 export class UserService {
 
   // Create
-  async createUser(data: CreateUserInput) {
+  async createUser(data: CreateUserInput, prisma: PrismaClientType ) {
 
     const existingUser = await prisma.user.findUnique({
       where: { email: data.email }
@@ -49,7 +51,7 @@ export class UserService {
 
 
   //login
-  async login(data: LoginInput): Promise<AuthPayload> {
+  async login(data: LoginInput , prisma: PrismaClientType ): Promise<AuthPayload> {
   
     try {
       const user = await prisma.user.findUnique({
@@ -86,7 +88,7 @@ export class UserService {
 
   // Read
   // Get user by ID without password (for authentication context)
-  async getUserByIdWithoutPassword(id: number) {
+  async getUserByIdWithoutPassword(id: number, prisma: PrismaClientType ) {
     try {
       const user = await prisma.user.findUnique({
         where: { id },
@@ -111,7 +113,7 @@ export class UserService {
   }
 
   //eventually change for admin only
-  async getUsers() {
+  async getUsers(prisma: PrismaClientType ) {
     try {
       return await prisma.user.findMany({
         select: {
@@ -128,7 +130,7 @@ export class UserService {
     }
   }
 
-  async getUserById(id: number) {
+  async getUserById(id: number, prisma: PrismaClientType ) {
     try {
       const user = await prisma.user.findUnique({
         where: { id },
@@ -147,7 +149,7 @@ export class UserService {
     }
   }
 
-  async getUserByEmail(email: string) {
+  async getUserByEmail(email: string, prisma: PrismaClientType ) {
     try {
       const user = await prisma.user.findUnique({
         where: { email },
@@ -166,7 +168,7 @@ export class UserService {
     }
   }
 
-  async getUserTasks(userId: number) {
+  async getUserTasks(userId: number, prisma: PrismaClientType ) {
     try {
       return await prisma.task.findMany({
         where: { userId },
@@ -179,7 +181,7 @@ export class UserService {
 
 
   // Update
-  async updateUser(id: number, data: UpdateUserInput) {
+  async updateUser(id: number, data: UpdateUserInput, prisma: PrismaClientType ) {
     // Remove the currentUserId parameter since we're already checking in resolvers
     const validatedData = UpdateUserInputSchema.parse(data);
     
@@ -210,7 +212,7 @@ export class UserService {
 
 
   // Delete
-  async deleteUser(id: number) {
+  async deleteUser(id: number, prisma: PrismaClientType) {
     try {
         await prisma.user.delete({ where: { id } });
         return true;

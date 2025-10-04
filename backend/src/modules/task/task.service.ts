@@ -1,20 +1,13 @@
-//import { TaskStatus as PrismaTaskStatus } from '@prisma/client'; 
 import { CreateTaskInput, UpdateTaskInput } from './task.schema';
+import { Prisma } from '@prisma/client';
 import { AppError } from '../../lib/AppErrors';
 import { handlePrismaError } from '../../lib/PrismaErrorHelper';
-import { prisma } from '../../lib/prisma';
-
-
-
-
-
-interface TaskFilters {
-  status?: string;
-  sortBy?: 'CREATED_ASC' | 'CREATED_DESC' | 'DUE_ASC' | 'DUE_DESC' | 'NAME_ASC' | 'NAME_DESC';
-}
+import { TaskFilters } from '../../types';
+import { PrismaClientType } from '../../lib/prisma';
 
 export class TaskService {
-  async verifyTaskOwnership(taskId: number, userId: number) {
+
+  async verifyTaskOwnership(taskId: number, userId: number, prisma:PrismaClientType) {
     const task = await prisma.task.findUnique({
       where: { id: taskId },
       select: { userId: true }
@@ -33,7 +26,7 @@ export class TaskService {
 
   
   //create
-  async createTask(data: CreateTaskInput, userId: number) {
+  async createTask(data: CreateTaskInput, userId: number, prisma:PrismaClientType) {
     try {
       const existingTask = await prisma.task.findFirst({
         where: {
@@ -59,9 +52,9 @@ export class TaskService {
 
   
 //Read
- async getTaskById(id: number, userId: number) {
+ async getTaskById(id: number, userId: number, prisma:PrismaClientType) {
     try {
-      await this.verifyTaskOwnership(id, userId);
+      await this.verifyTaskOwnership(id, userId, prisma);
       
       const task = await prisma.task.findUnique({ 
         where: { id }
@@ -77,12 +70,12 @@ export class TaskService {
   }
 
 
-  async getTasksByUserId(userId: number, filters : TaskFilters = {}) {
+  async getTasksByUserId(userId: number, filters : TaskFilters = {}, prisma:PrismaClientType) {
   try {
-    const where: any = { userId };
+    const where: Prisma.TaskWhereInput= { userId };
 
     // Default sorting
-    let orderBy: any = { createdAt: 'desc' };
+    let orderBy: Prisma.TaskOrderByWithRelationInput = { createdAt: 'desc' };
 
     if (filters.status) {
       where.status = filters.status;
@@ -121,9 +114,9 @@ export class TaskService {
 }
 
 //Update
-   async updateTask(id: number, data: UpdateTaskInput, userId: number) {
+   async updateTask(id: number, data: UpdateTaskInput, userId: number, prisma: PrismaClientType) {
     try {
-      await this.verifyTaskOwnership(id, userId);
+      await this.verifyTaskOwnership(id, userId, prisma);
 
       return await prisma.task.update({
         where: { id },
@@ -139,9 +132,9 @@ export class TaskService {
 
 
 //delete
-  async deleteTask(id: number, userId: number) {
+  async deleteTask(id: number, userId: number, prisma:PrismaClientType) {
     try {
-      await this.verifyTaskOwnership(id, userId);
+      await this.verifyTaskOwnership(id, userId, prisma);
 
       await prisma.task.delete({ where: { id } });
       return true;
