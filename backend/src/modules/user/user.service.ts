@@ -5,26 +5,24 @@ import { generateToken, hashPassword, comparePassword } from '../../utils/auth';
 import {PrismaClientType } from '../../lib/prisma';
 import { AuthPayload } from '../../types';
 
-
-
 export class UserService {
+  constructor(private prisma: PrismaClientType) {}
 
   // Create
-  async createUser(data: CreateUserInput, prisma: PrismaClientType ) {
-
-    const existingUser = await prisma.user.findUnique({
-      where: { email: data.email }
+  async createUser(data: CreateUserInput) {
+    const existingUser = await this.prisma.user.findUnique({
+      where: { email: data.email },
     });
 
     if (existingUser) {
-      throw new AppError('Email already exists', 'EMAIL_EXISTS', 400);
+      throw new AppError("Email already exists", "EMAIL_EXISTS", 400);
     }
 
     try {
       // Hash password before saving
       const hashedPassword = await hashPassword(data.password);
 
-      const user = await prisma.user.create({
+      const user = await this.prisma.user.create({
         data: {
           email: data.email,
           password: hashedPassword,
@@ -34,38 +32,36 @@ export class UserService {
 
       // Remove password from returned user object
       const { password, ...userWithoutPassword } = user;
-      
+
       // Generate JWT token
       const token = generateToken(user.id);
 
       return {
         token,
-        user: userWithoutPassword
+        user: userWithoutPassword,
       };
     } catch (error) {
-      handlePrismaError(error, 'User');
-      throw new AppError('User creation failed', 'USER_CREATION_FAILED', 500);
+      handlePrismaError(error, "User");
+      throw new AppError("User creation failed", "USER_CREATION_FAILED", 500);
     }
   }
-//--------------------------------------------------------------------------------
-
+  //--------------------------------------------------------------------------------
 
   //login
-  async login(data: LoginInput , prisma: PrismaClientType ): Promise<AuthPayload> {
-  
+  async login(data: LoginInput,): Promise<AuthPayload> {
     try {
-      const user = await prisma.user.findUnique({
-        where: { email: data.email }
+      const user = await this.prisma.user.findUnique({
+        where: { email: data.email },
       });
 
       if (!user) {
-        throw new AppError('Invalid email or password', 'INVALID_CREDENTIALS', 401);
+        throw new AppError("Invalid email or password","INVALID_CREDENTIALS",401);
       }
 
       // Verify password
-      const isValidPassword = await comparePassword(data.password, user.password);
+      const isValidPassword = await comparePassword(data.password,user.password);
       if (!isValidPassword) {
-        throw new AppError('Invalid email or password', 'INVALID_CREDENTIALS', 401);
+        throw new AppError("Invalid email or password","INVALID_CREDENTIALS",401);
       }
 
       // Generate JWT token
@@ -76,21 +72,20 @@ export class UserService {
 
       return {
         token,
-        user: userWithoutPassword
+        user: userWithoutPassword,
       };
-
     } catch (error) {
-      handlePrismaError(error, 'User');
-      throw new AppError('Login failed', 'LOGIN_FAILED', 500);
+      handlePrismaError(error, "User");
+      throw new AppError("Login failed", "LOGIN_FAILED", 500);
     }
   }
-//--------------------------------------------------------------------------------
+  //--------------------------------------------------------------------------------
 
   // Read
   // Get user by ID without password (for authentication context)
-  async getUserByIdWithoutPassword(id: number, prisma: PrismaClientType ) {
+  async getUserByIdWithoutPassword(id: number) {
     try {
-      const user = await prisma.user.findUnique({
+      const user = await this.prisma.user.findUnique({
         where: { id },
         select: {
           id: true,
@@ -98,94 +93,97 @@ export class UserService {
           name: true,
           createdAt: true,
           updatedAt: true,
-          tasks: true
-        }
+          tasks: true,
+        },
       });
 
       if (!user) {
-        throw new AppError('User not found', 'NOT_FOUND', 404);
+        throw new AppError("User not found", "NOT_FOUND", 404);
       }
 
       return user;
     } catch (error) {
-      handlePrismaError(error, 'User', id);
+      handlePrismaError(error, "User", id);
     }
   }
 
   //eventually change for admin only
-  async getUsers(prisma: PrismaClientType ) {
+  async getUsers() {
     try {
-      return await prisma.user.findMany({
+      return await this.prisma.user.findMany({
         select: {
           id: true,
           email: true,
           name: true,
           createdAt: true,
           updatedAt: true,
-          tasks: true
-        }
+          tasks: true,
+        },
       });
     } catch (error) {
-      handlePrismaError(error, 'User');
+      handlePrismaError(error, "User");
     }
   }
 
-  async getUserById(id: number, prisma: PrismaClientType ) {
+  async getUserById(id: number) {
     try {
-      const user = await prisma.user.findUnique({
+      const user = await this.prisma.user.findUnique({
         where: { id },
         include: { tasks: true },
       });
 
       if (!user) {
-        throw new AppError('User not found', 'NOT_FOUND', 404);
+        throw new AppError("User not found", "NOT_FOUND", 404);
       }
 
       // Remove password from returned user object
       const { password, ...userWithoutPassword } = user;
       return userWithoutPassword;
     } catch (error) {
-      handlePrismaError(error, 'User', id);
+      handlePrismaError(error, "User", id);
     }
   }
 
-  async getUserByEmail(email: string, prisma: PrismaClientType ) {
+  async getUserByEmail(email: string) {
     try {
-      const user = await prisma.user.findUnique({
+      const user = await this.prisma.user.findUnique({
         where: { email },
         include: { tasks: true },
       });
 
       if (!user) {
-        throw new AppError('User not found', 'NOT_FOUND', 404);
+        throw new AppError("User not found", "NOT_FOUND", 404);
       }
 
       // Remove password from returned user object
       const { password, ...userWithoutPassword } = user;
       return userWithoutPassword;
     } catch (error) {
-      handlePrismaError(error, 'User');
+      handlePrismaError(error, "User");
     }
   }
 
-  async getUserTasks(userId: number, prisma: PrismaClientType ) {
+  async getUserTasks(userId: number) {
     try {
-      return await prisma.task.findMany({
+      return await this.prisma.task.findMany({
         where: { userId },
       });
     } catch (error) {
-      handlePrismaError(error, 'User', userId);
+      handlePrismaError(error, "User", userId);
     }
   }
-//--------------------------------------------------------------------------------
-
+  //--------------------------------------------------------------------------------
 
   // Update
-  async updateUser(id: number, data: UpdateUserInput, prisma: PrismaClientType ) {
+  async updateUser(
+    id: number,
+    data: UpdateUserInput,
+
+  ) {
     // Remove the currentUserId parameter since we're already checking in resolvers
     const validatedData = UpdateUserInputSchema.parse(data);
-    
-   try {
+
+    try {
       const updateData: any = {
         email: validatedData.email,
         name: validatedData.name,
@@ -196,7 +194,7 @@ export class UserService {
         updateData.password = await hashPassword(validatedData.password);
       }
 
-      const user = await prisma.user.update({
+      const user = await this.prisma.user.update({
         where: { id },
         data: updateData,
       });
@@ -205,19 +203,18 @@ export class UserService {
       const { password, ...userWithoutPassword } = user;
       return userWithoutPassword;
     } catch (error) {
-      handlePrismaError(error, 'User', id);
+      handlePrismaError(error, "User", id);
     }
   }
-//--------------------------------------------------------------------------------
-
+  //--------------------------------------------------------------------------------
 
   // Delete
-  async deleteUser(id: number, prisma: PrismaClientType) {
+  async deleteUser(id: number) {
     try {
-        await prisma.user.delete({ where: { id } });
-        return true;
+      await this.prisma.user.delete({ where: { id } });
+      return true;
     } catch (error) {
-        handlePrismaError(error, 'User', id);
+      handlePrismaError(error, "User", id);
     }
   }
 }

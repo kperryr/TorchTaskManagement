@@ -1,4 +1,6 @@
 import { User, Task, TaskStatus } from '@prisma/client';
+import { UserService } from './modules/user/user.service';
+import { TaskService } from './modules/task/task.service';
 import { PrismaClientType } from './lib/prisma';
 
 
@@ -18,10 +20,13 @@ export type UserWithoutPassword = {
   updatedAt: Date;
 };
 
-
 export interface GraphQLContext {
   user?: UserWithoutPassword;
   prisma: PrismaClientType;
+   services: {
+    userService: UserService;
+    taskService: TaskService;
+  }
 }
 
 export type AuthPayload = {
@@ -29,9 +34,13 @@ export type AuthPayload = {
   user: UserWithoutPassword;
 };
 
-//fix soon
  export interface JWTPayload {
   userId: number; 
+}
+
+export interface JWTDecoded extends JWTPayload {
+  iat: number;
+  exp: number;
 }
 
 export interface TaskFilters {

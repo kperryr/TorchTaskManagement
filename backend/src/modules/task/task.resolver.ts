@@ -1,9 +1,7 @@
-import { TaskService } from './task.service';
 import { CreateTaskSchema, UpdateTaskSchema, CreateTaskInput, UpdateTaskInput } from './task.schema';
 import { validation } from '../../lib/validation';
 import { GraphQLContext, TaskFilters, TaskWithUser} from '../../types';
 
-const taskService = new TaskService();
 
 export const taskResolvers = {
   Query: {
@@ -12,7 +10,7 @@ export const taskResolvers = {
         throw new Error('Not authenticated. Please log in.');
       }
       const filterParams = filters || {};
-       const tasks = await taskService.getTasksByUserId(context.user.id, filterParams, context.prisma);
+       const tasks = await context.services.taskService.getTasksByUserId(context.user.id, filterParams);
       
        if (!tasks) {
         return [];
@@ -32,7 +30,7 @@ export const taskResolvers = {
         throw new Error('Not authenticated. Please log in.');
       }
       const validatedId = validation.parseId(id);
-      const task = await taskService.getTaskById(validatedId, context.user.id, context.prisma);
+      const task = await context.services.taskService.getTaskById(validatedId, context.user.id);
       
        if (!task) {
         throw new Error('Task not found');
@@ -54,7 +52,7 @@ export const taskResolvers = {
         throw new Error('Not authenticated. Please log in.');
       }
       const validatedData = CreateTaskSchema.parse(input);
-      return await taskService.createTask(validatedData, context.user.id, context.prisma);
+      return await context.services.taskService.createTask(validatedData, context.user.id);
     },
 
     updateTask: async (_: unknown, { id, input }: { id: string; input: UpdateTaskInput }, context: GraphQLContext) => {
@@ -63,15 +61,15 @@ export const taskResolvers = {
       }
       const validatedData = UpdateTaskSchema.parse(input);
       const validatedId = validation.parseId(id);
-      return await taskService.updateTask(validatedId, validatedData, context.user.id, context.prisma);
+      return await context.services.taskService.updateTask(validatedId, validatedData, context.user.id);
     },
 
      deleteTask: async (_: unknown, { id }: { id: string }, context: GraphQLContext) => {
-      if (!context.user) {
+      if (!context.user) { 
         throw new Error('Not authenticated. Please log in.');
       }
       const taskId = validation.parseId(id);
-      return await taskService.deleteTask(taskId, context.user.id,context.prisma);
+      return await context.services.taskService.deleteTask(taskId, context.user.id);
     },
   },
 
