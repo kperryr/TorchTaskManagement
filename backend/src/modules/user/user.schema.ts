@@ -47,19 +47,9 @@ export const LoginSchema = z.object({
   password: PasswordSchema
 });
 
-
-// Validation for user ID
-export const UserIdSchema = z.object({
-  id: z
-    .string()
-    .regex(/^\d+$/, 'ID must contain only numbers')
-    .transform(val => parseInt(val, 10))
-    .refine(val => val > 0, 'ID must be positive'),
-});
-
 // Inferred TypeScript type for use in services, controllers, etc.
 export type CreateUserInput = z.infer<typeof CreateUserSchema>;
 export type UpdateUserInput = z.infer<typeof UpdateUserInputSchema>;
 export type LoginInput = z.infer<typeof LoginSchema>;
-export type UserIdInput = z.infer<typeof UserIdSchema>;
+
 

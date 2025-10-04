@@ -1,7 +1,7 @@
 import { AppError } from './AppErrors';
 import { z } from 'zod';
 
-//Validates data from client in resolvers using Zod for database calls in service files
+//Validates data from client in resolvers using Zod for database calls in resolver files
 export const validation = {
 
     parseId : (id: string): number => {

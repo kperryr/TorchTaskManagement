@@ -163,10 +163,12 @@ export class UserService {
     }
   }
 
-  async getUserTasks(userId: number) {
+  async getUserTasks(userId: number, limit?:number) {
     try {
       return await this.prisma.task.findMany({
         where: { userId },
+        take:{limit},
+        orderBy: { createdAt: 'desc' }
       });
     } catch (error) {
       handlePrismaError(error, "User", userId);
@@ -175,28 +177,17 @@ export class UserService {
   //--------------------------------------------------------------------------------
 
   // Update
-  async updateUser(
-    id: number,
-    data: UpdateUserInput,
-
-  ) {
-    // Remove the currentUserId parameter since we're already checking in resolvers
-    const validatedData = UpdateUserInputSchema.parse(data);
-
+  async updateUser(id: number,data: UpdateUserInput) {
     try {
-      const updateData: any = {
-        email: validatedData.email,
-        name: validatedData.name,
-      };
 
       // Only update password if provided
-      if (validatedData.password) {
-        updateData.password = await hashPassword(validatedData.password);
+      if (data.password) {
+        data.password = await hashPassword(data.password);
       }
 
       const user = await this.prisma.user.update({
         where: { id },
-        data: updateData,
+        data: data,
       });
 
       // Remove password from returned user object

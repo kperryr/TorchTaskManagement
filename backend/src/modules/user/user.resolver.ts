@@ -98,11 +98,13 @@ export const userResolvers = {
   // Field resolvers for relations 
   User: {
     tasks: (user: UserWithTasks, _: unknown, context: GraphQLContext) => {      
-      // If tasks are already loaded via include, return them
-      if (user.tasks) return user.tasks;
+      // If tasks are already loaded via include, return the first five
+      if (user.tasks) {
+        return user.tasks.slice(0, 5);
+      };
       
       // Otherwise fetch them
-      return context.services.userService.getUserTasks(user.id);
+      return context.services.userService.getUserTasks(user.id, 5);
     },
   },
 };

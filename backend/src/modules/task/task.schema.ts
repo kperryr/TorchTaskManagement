@@ -44,16 +44,7 @@ export const UpdateTaskSchema = z.object({
   message: 'At least one field must be provided for update',
 });
 
-// Validation for task ID
-export const TaskIdSchema = z.object({
-  id: z
-    .string()
-    .regex(/^\d+$/, 'ID must contain only numbers')
-    .transform(val => parseInt(val, 10))
-    .refine(val => val > 0, 'ID must be positive'),
-});
 
 // Inferred TypeScript type for use in services, controllers, etc.
 export type CreateTaskInput = z.infer<typeof CreateTaskSchema>;
 export type UpdateTaskInput = z.infer<typeof UpdateTaskSchema>;
-export type TaskIdInput = z.infer<typeof TaskIdSchema>;
