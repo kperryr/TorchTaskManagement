@@ -18,7 +18,6 @@ export type UserWithoutPassword = {
   updatedAt: Date;
 };
 
-
 export interface GraphQLContext {
   user?: UserWithoutPassword;
   prisma: PrismaClientType;
@@ -29,9 +28,13 @@ export type AuthPayload = {
   user: UserWithoutPassword;
 };
 
-//fix soon
  export interface JWTPayload {
   userId: number; 
+}
+
+export interface JWTDecoded extends JWTPayload {
+  iat: number;
+  exp: number;
 }
 
 export interface TaskFilters {

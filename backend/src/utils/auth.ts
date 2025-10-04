@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import { env } from '../config/env';
-import { JWTPayload } from '../types';
+import { JWTPayload, JWTDecoded} from '../types';
 
 const JWT_EXPIRES_IN = '7d';
 
@@ -18,7 +18,8 @@ if (!env.jwtSecret) {
     throw new Error('JWT_SECRET is not configured');
   }
   try {
-    return jwt.verify(token, env.jwtSecret) as JWTPayload;
+    const decoded = jwt.verify(token, env.jwtSecret) as JWTDecoded;
+    return { userId: decoded.userId };
   } catch (error) {
     throw new Error('Invalid or expired token');
   }
