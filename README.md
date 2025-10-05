@@ -6,6 +6,21 @@
 
 This is a full-stack CRUD task manager built with React + TypeScript, Node.js + Express + GraphQL, and a PostgreSQL database.
 
+## Dev Branch Improvements
+
+- **Deployment with Supabase:**
+  - Frontend: https://torchtaskmanagementfrontend.onrender.com
+  - Backend ( GraphQL playground ): https://torchtaskmanagement.onrender.com/graphql
+    
+- **Factory Function** for Express server setup
+- **Signleton pattern** implementation for Prisma
+- **Token persistence** with `localStorage` on the frontend
+- **New Docker build process** with `./setup.sh`
+- **Unit testing** for database and service functions
+- Enhanced type safety
+- Removed redundant validation in API layer
+- Resolved registration and logout feature bugs
+
 ## Features
 
 ### Core Features
@@ -53,30 +68,43 @@ This is a full-stack CRUD task manager built with React + TypeScript, Node.js + 
 - **Tailwindcss**: v4.1.13 - Utility-first CSS framework for quick UI styling and responsive design
 
 
-## Setup and Installation
+## NEW Setup and Installation
 1. **Clone this repo**:
    ```bash
    git clone https://github.com/kperryr/TorchTaskManagement.git
    
-2. **For development purposes, please use the .env file as shown below:**
+2. **Navigate to correct directory**:
+   ```bash
+   cd TorchTaskManagement
+
+3. **For development purposes, please use the .env.example file as shown below:**
+    Setup script will automatically create a .env file
    ```bash
    # Database Configuration
    POSTGRES_USER=postgres
    POSTGRES_PASSWORD=password
    POSTGRES_DB=TorchManagement
    DATABASE_URL=postgresql://postgres:password@db:5432/TorchManagement?schema=public
-   
+
    # Application Configuration
    NODE_ENV=development
    PORT=4000
    
    # Frontend 
-   VITE_API_URL=http://localhost:4000
+   VITE_API_URL=http://localhost:4000/graphql
+
+   #JWT will be generated here
    
-3. **Run Docker and build/start Docker Container**:
+5. **Run bash script to build and start Docker container  (Make sure Docker is running first) **:
    ```bash
-   docker-compose up
+   ./setup.sh
+
+6. **Make it executable (if needed)**:
+   ```bash
+   chmod +x setup.sh
    
-4. **Run the link below in your browser to access the application**:
+7. **Access the Application**:
    ```bash
-   http://localhost:5173/
+   Frontend: http://localhost:5173/
+   GraphQL Playground: http://localhost:4000/graphql
+
