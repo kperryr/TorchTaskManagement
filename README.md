@@ -7,7 +7,9 @@
 This is a full-stack CRUD task manager built with React + TypeScript, Node.js + Express + GraphQL, and a PostgreSQL database.
 
 Backend Deployment with Supbase : https://torchtaskmanagement.onrender.com
+
 Frontend Deployment : https://torchtaskmanagementfrontend.onrender.com
+
 ## Features
 
 ### Core Features
