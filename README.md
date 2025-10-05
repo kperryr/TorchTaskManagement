@@ -13,9 +13,9 @@ This is a full-stack CRUD task manager built with React + TypeScript, Node.js + 
   - Backend ( GraphQL playground ): https://torchtaskmanagement.onrender.com/graphql
     
 - **Factory Function** for Express server setup
-- **Signleton pattern** implementation for Prisma
+- **Singleton pattern** implementation for Prisma
 - **Token persistence** with `localStorage` on the frontend
-- **New Docker build process** with `./setup.sh`
+- **Improved Docker build process** with `./setup.sh`
 - **Unit testing** for database and service functions
 - Enhanced type safety
 - Removed redundant validation in API layer
