@@ -62,6 +62,12 @@ export const userResolvers = {
       return context.services.userService.login(validatedData);
     },
 
+    logout: async () => {
+      // logout is primarily client-side
+      console.log('User logged out - client will remove token from Localstorage');
+      return true; 
+    },
+
     updateUser: async (_: unknown, { id, input }: { id: string; input: UpdateUserInput }, context: GraphQLContext) => {
       if (!context.user) {
         throw new Error('Not authenticated. Please log in.');

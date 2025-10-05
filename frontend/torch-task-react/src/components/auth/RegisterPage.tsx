@@ -28,6 +28,12 @@ export const RegisterPage: React.FC = () => {
     e.preventDefault();
     setError("");
 
+    // Validate passwords match
+    if (formData.password !== formData.confirmPassword) {
+      setError("Passwords do not match");
+      return;
+    }
+
     setIsLoading(true);
 
     try {
@@ -41,7 +47,7 @@ export const RegisterPage: React.FC = () => {
       } else if (err.message) {
         setError(err.message);
       } else {
-        setError("Failed to create task. Please try again.");
+        setError("Failed to create account. Please try again.");
       }
 
     } finally {
