@@ -1,8 +1,10 @@
 import { useAuthStore } from "../stores/authStore";
+import { env } from "../config/env";
+
 //Graph API service client that handles authenticated requests to API
 // middle man between react query and the API
 
-const API_URL = "http://localhost:4000/graphql";
+const API_URL = env.apiUrl;
 
 class ApiService {
   private getToken(): string | null {
