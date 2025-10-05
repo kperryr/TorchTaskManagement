@@ -3,8 +3,6 @@ import { UserWithTasks } from '../../types';
 import { validation } from '../../lib/validation';
 import { GraphQLContext } from '../../types';
 
-
-
 export const userResolvers = {
   Query: {
     me: async (_: unknown, __: unknown, context: GraphQLContext) => {
