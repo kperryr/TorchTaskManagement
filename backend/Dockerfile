@@ -3,7 +3,7 @@ FROM node:20-alpine
 # Install dependencies required by Prisma
 RUN apk add --no-cache bash openssl libstdc++ libc6-compat
 
-#WORKDIR /app
+WORKDIR /app
 
 # Copy files needed to install and run
 COPY package*.json ./
@@ -20,5 +20,5 @@ RUN npm run build
 
 EXPOSE 4000
 
-# Apply migrations and start app
-CMD sh -c "npx prisma migrate deploy && node dist/server.js"
+# Reset database and start app
+CMD sh -c "npx prisma migrate reset --force && node dist/server.js"
