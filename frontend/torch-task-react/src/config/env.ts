@@ -3,5 +3,5 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 export const env = {
-  apiUrl: process.env.API_URL || 'https://torchtaskmanagement.onrender.com/graphql',
+  apiUrl: import.meta.env.VITE_API_URL || 'https://torchtaskmanagement.onrender.com/graphql',
 };
