@@ -1,5 +1,6 @@
 import { CreateTaskSchema, UpdateTaskSchema, CreateTaskInput, UpdateTaskInput } from './task.schema';
 import { validation } from '../../lib/validation';
+import { convertDates } from '../../utils/dateConvert';
 import { GraphQLContext, TaskFilters, TaskWithUser} from '../../types';
 
 
@@ -17,12 +18,7 @@ export const taskResolvers = {
       }
       
       // Convert dates to ISO strings for frontend
-      return tasks.map((task: any) => ({
-        ...task,
-        createdAt: task?.createdAt?.toISOString(),
-        updatedAt: task?.updatedAt?.toISOString(),
-        dueDate: task?.dueDate ? task.dueDate.toISOString() : null, 
-      }));
+      return tasks.map(convertDates);
     },
 
     taskById: async (_: unknown, { id }: { id: string }, context: GraphQLContext) => {
@@ -36,13 +32,8 @@ export const taskResolvers = {
         throw new Error('Task not found');
       }
       
-      // Convert dates to ISO strings for frontend - use type assertion
-    return {
-      ...task,
-      createdAt: task.createdAt.toISOString(),
-      updatedAt: task.updatedAt.toISOString(),
-      dueDate: task.dueDate ? task.dueDate.toISOString() : null,
-    };
+    // Convert dates to ISO strings for frontend
+    return convertDates(task);
     },
   },
 
