@@ -2,6 +2,10 @@
 
 ![image](./assets/TorchTask.PNG)
 
+# Updates
+
+Check out the `dev` branch for the latest updates and ongoing development.
+
 ## Overview
 
 This is a full-stack CRUD task manager built with React + TypeScript, Node.js + Express + GraphQL, and a PostgreSQL database.
