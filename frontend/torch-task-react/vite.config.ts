@@ -7,4 +7,10 @@ export default defineConfig({
     react(),
     tailwindcss(),
   ],
+  server: {
+    allowedHosts: [
+      'torchtaskmanagementfrontend.onrender.com',
+      'localhost'
+    ]
+  }
 });
