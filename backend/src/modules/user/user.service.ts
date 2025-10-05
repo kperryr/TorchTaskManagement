@@ -167,7 +167,7 @@ export class UserService {
     try {
       return await this.prisma.task.findMany({
         where: { userId },
-        take:{limit},
+        take: limit,
         orderBy: { createdAt: 'desc' }
       });
     } catch (error) {
