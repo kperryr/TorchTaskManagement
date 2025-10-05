@@ -4,6 +4,25 @@ import { authService } from "../services/authService";
 
 //creates a centralized state store to manage user authentication for useAuth Hook
 
+const TOKEN_STORAGE_KEY = "torch-task-token";
+
+const loadStoredToken = () =>
+  typeof window !== "undefined" ? localStorage.getItem(TOKEN_STORAGE_KEY) : null;
+
+const persistToken = (token: string) => {
+  if (typeof window !== "undefined") {
+    localStorage.setItem(TOKEN_STORAGE_KEY, token);
+  }
+};
+
+const clearStoredToken = () => {
+  if (typeof window !== "undefined") {
+    localStorage.removeItem(TOKEN_STORAGE_KEY);
+  }
+};
+
+const initialToken = loadStoredToken();
+
 interface AuthState {
   user: User | null;
   token: string | null;
@@ -21,13 +40,14 @@ interface AuthState {
 
 export const useAuthStore = create<AuthState>((set, get) => ({
   user: null,
-  token: null,
-  isAuthenticated: false,
-  isLoading: true,
+  token: initialToken,
+  isAuthenticated: Boolean(initialToken),
+  isLoading: Boolean(initialToken),
 
   login: async (email: string, password: string) => {
     try {
       const authPayload = await authService.login(email, password);
+      persistToken(authPayload.token);
       set({
         user: authPayload.user,
         token: authPayload.token,
@@ -43,6 +63,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   register: async (email: string, password: string, name: string) => {
     try {
       const authPayload = await authService.register(email, password, name);
+      persistToken(authPayload.token);
       set({
         user: authPayload.user,
         token: authPayload.token,
@@ -66,10 +87,12 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   },
 
   setAuth: (user: User, token: string) => {
+    persistToken(token);
     set({ user, token, isAuthenticated: true, isLoading: false });
   },
 
   clearAuth: () => {
+    clearStoredToken();
     set({
       user: null,
       token: null,
